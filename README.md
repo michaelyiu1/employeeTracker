@@ -8,3 +8,5 @@ Users will be able to view and manage the departments, roles, and employees in a
 
 ## Links
 Github Repo: https://github.com/michaelyiu1/employeeTracker
+
+Walkthrough Link: https://drive.google.com/file/d/1LXekZh8YaTjDESRoyc-PTqB4Rg2Jhn13/view
