@@ -19,7 +19,7 @@ const tracker = () => {
                 type: 'list',
                 name: "prompt",
                 message: "What would you like to do?",
-                choices: ['View all departments', 'View all roles', 'View all employees', 'Add department', 'Add role', 'Add employee','quit']
+                choices: ['View all departments', 'View employees by department', 'Add department','delete department', 'View all roles', 'View roles by manager',  'Add role', 'delete role', 'View all employees', 'Add employee',  'delete employee', 'update employee role', 'quit']
             }
         ]).then((data) => {
             switch(data.prompt){
@@ -32,6 +32,21 @@ const tracker = () => {
                 case 'View all employees':
                     viewEmployees();
                     break;
+                case 'view roles by manager':
+                    viewRoleByManager();
+                    break;
+                case 'view employees by department':
+                    viewEmployeesByDepartment();
+                    break;
+                case 'delete department':
+                    deleteDepartment();
+                    break;
+                case 'delete role':
+                    deleteRole();
+                    break;
+                case 'delete employee':
+                    deleteEmployee();
+                    break;
                 case 'Add department':
                     addDepartment();
                     break;
@@ -41,7 +56,10 @@ const tracker = () => {
                 case 'Add employee':
                     addEmployee();
                     break;
-                case 'exit':
+                case 'update employee role':
+                    updateEmployee();
+                    break;
+                case 'quit':
                     quit();
                     break;
             }
@@ -66,7 +84,7 @@ const viewRoles = () => {
 };
 
 const viewEmployees = () => {
-    db.query('SELECT * FROM employee', async function (err, results) {
+    db.query('SELECT * FROM employees', async function (err, results) {
         const table = await cTable.getTable(results);
         console.log(table);
         tracker();
@@ -106,16 +124,147 @@ const addRole = () => {
                 message: 'what is the department id for this role?'
             }
         ]).then((data) => {
-            db.query('INSERT INTO roles(title, salary, department_id) VALUES (?)', data.newRole, async function (err, results) {
+            db.query('INSERT INTO roles(title, salary, department_id) VALUES (?,?,?)', [data.newRole, data.salary, data.department], async function (err, results) {
                 await console.log(`${data.newRole} added to roles!`);
                 tracker();
             } );
         });
     };
 
-const quit = () => {
+
+
+    const addEmployee = () => {
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'firstName',
+                message: 'What is the first name of the employee you would like to add?'
+            },
+            {
+                type: 'input',
+                name: 'lastName',
+                message: 'What is the last name of the employee you would like to add?'
+            },
+            {
+                type: 'input',
+                name: 'role',
+                message: 'what is the role id for this employee?'
+            },
+            {
+                type: 'input',
+                name: 'manager',
+                message: 'What is the manager id for this employee ? (if applicable)'
+            }
+        ]).then((data) => {
+            db.query('INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [data.firstName, data.lastName, data.role, data.manager], async function (err, results) {
+                await console.log(`${data.firstName} added to roles!`);
+                tracker();
+            } );
+        });
+    };
+
+const viewRoleByManager = () => {
+
+};
+
+const viewEmployeesByDepartment = () => {
+    db.query('SELECT ')
+};
+
+const deleteDepartment = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: 'What is the id of the department you want to delete?'
+        }
+    ]).then((data) => {
+        
+        db.query('DELETE FROM departments WHERE id = ?', data.department, async (err, result) => {
+            if (err){
+                console.log(err);
+            } else {
+                await console.log('Successfully deleted department');
+                tracker();
+            }
+        })
+    })
+};
+
+const deleteEmployee = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'What is the first name of the employee you want to delete?'
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'What is the last name of the employee you want to delete?'
+        }
+    ]).then((data) => {
+        db.query(`DELETE FROM employee WHERE first_name = ? AND last_name = ?`, [data.firstName, data.lastName], (err, result) => {
+            if (err){
+                console.log(err);
+            } else {
+                console.log('Successfully deleted employee');
+            }
+        })
+    }).then(() => tracker())
+};
+
+const deleteRole = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'id',
+            message: 'What is the id of the role you want to delete?'
+        }
+    ]).then((data) => {
+        
+        db.query('DELETE FROM roles WHERE id = ?', data.id, async (err, result) => {
+            if (err){
+                console.log(err);
+            } else {
+                await console.log('Successfully deleted role');
+                tracker();
+            }
+        })
+    })    
+}
+
+const updateEmployee = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'What is the first name of the employee you want to update?'
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'What is the last name of the employee you want to update?'
+        },
+        {
+            type: 'input',
+            name: 'role',
+            message: 'What is the new role id for this emloyee?'
+        }
+    ]).then((data) => {
+        db.query('UPDATE employees SET role_id = ? WHERE first_name = ? AND last_name = ?', [data.role, data.firstName, data.lastName], async (err, result) => {
+            if(err){
+                console.log(err);
+            } else {
+                console.log('Successfully update employee role')
+            }
+        })
+    }).then(() => tracker());
+};
+
+function quit() {
         console.log("\nGoodbye!");
-        process.exit(0);
+        process.exit();
       };
 
 

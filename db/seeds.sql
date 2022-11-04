@@ -17,14 +17,12 @@ VALUES ("CEO", 200000.00, 2),
        ("Party Planner", 400000.00, 2),
        ("Loan Shark", 175000.00, 1);
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("John", "Lopez", 1),
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES ("John", "Lopez", 2, 2),
        ("Marco", "Renzo", 5, 4),
-       ("Paola", "Diaz", 8, 23),
-       ("Belle", "Fulton", 6),
-       ("Archie", "Schwartz", 4),
-       ("Gil", "Ozeri", 7),
-       ("Georgie", "Lucas", 3),
-       ("Lily", "Sullivan", 2, 15);
-
-       
+       ("Paola", "Diaz", 8, 4),
+       ("Belle", "Fulton", 4,3),
+       ("Archie", "Schwartz", 4,3),
+       ("Gil", "Ozeri", 2, 4 ),
+       ("Georgie", "Lucas", 2,4),
+       ("Lily", "Sullivan", 2, 2);
