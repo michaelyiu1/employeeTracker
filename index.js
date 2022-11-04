@@ -1,8 +1,11 @@
+// Include packages and assign them to variables
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const cTable = require('console.table');
+
 require('dotenv').config();
 
+// Create Connection to Database
 const db = mysql.createConnection(
     {
         user: process.env.DB_USER,
@@ -12,7 +15,7 @@ const db = mysql.createConnection(
     console.log('connected to the database')
 );
 
-
+// Function that opens company tracker and prompts user with options 
 const tracker = () => {
         inquirer.prompt([
             {
@@ -66,6 +69,7 @@ const tracker = () => {
         });
     };
 
+// View all Departments
 const viewDepartments = () => {
         db.query('SELECT * FROM departments', async function (err, results) {
         const table = await cTable.getTable(results);
@@ -75,8 +79,9 @@ const viewDepartments = () => {
 
 };
 
+// View all
 const viewRoles = () => {
-    db.query('SELECT * FROM roles', async function (err, results) {
+    db.query('SELECT * FROM roles LEFT JOIN departments ON roles.department_id = departments.id', async function (err, results) {
         const table = await cTable.getTable(results);
         console.log(table);
         tracker();
@@ -84,10 +89,15 @@ const viewRoles = () => {
 };
 
 const viewEmployees = () => {
-    db.query('SELECT * FROM employees', async function (err, results) {
-        const table = await cTable.getTable(results);
-        console.log(table);
-        tracker();
+    db.query("SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.department_name AS department, roles.salary FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id;", async function (err, results) {
+        if(err){
+            console.log(err);
+            tracker();
+        } else {
+            const table = await cTable.getTable(results);
+            console.log(table);
+            tracker();
+        }
     });
 };
 
